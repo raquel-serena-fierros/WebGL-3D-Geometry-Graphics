@@ -1,74 +1,29 @@
-/*
- * Raquel Fierros 
- */
-
 var canvas;
 var gl;
 var program1;
 
-// z angle light source angle
 var dz = 0;
 
-//light
 var fixedlight = false;
 var rotatelight = false;
 var lightangle = 0;
 
-// sliders
 var sSlider = null;
 var lrSlider = null;
-// Objects 
+
 var towerObject = 
   { };
-  
 var cylinderObject = 
   { };
   
-  // holds currently active object
-  var activeObject =null;
-//emerald material
-   // ambient: vec4(1.0, 0.0, 0.0, 1.0),
-  //  diffuse: vec4(0.3, 0.4, 0.55, 1.0),
-   // specular: vec4(1.0, 1.0, 1.0, 1.0),
-  //  shininess: 100.0,
-    // material properties  
-  
-/*
- * var pearl = {
-	  ambient: vec4(0.25, 0.20725, 0.20725, 0),
-      diffuse: vec4(1, 0.829, 0.829, 0),
-      specular: vec4(0.296648, 0.296648, 0.296648, 0),
-      shininess: 0.088,
-  
-var chrome = {
-	  ambient: vec4(0.25, 0.25, 0.25, 1.0),
-      diffuse: vec4(0.4, 0.4, 0.4, 1.0),
-      specular: vec4(0.774597,0.774597, 0.774597, 1.0),
-      shininess: .6,
-}
+var activeObject =null;
 
-var obsidian = {
-	  ambient: vec4(0.05375, 0.05, 0.066255, 1.0),
-      diffuse: vec4(0.18275	0.17,0.22525, 1.0),
-      specular: vec4(0.332741,0.328634,0.346435, 1.0),
-      shininess: .3,
-}
-  
-var yellow_rubber = {
-	  ambient: vec4(0.05, 0.05, 0.0, 1.0),
-      diffuse: vec4(0.5, 0.5, 0.4, 1.0),
-      specular: vec4(0.7, 0.7, 0.04, 1.0),
-      shininess: .078125,
-}
-}
- */
 var emerald = {
     ambient: vec4(0.0215 ,0.1745 ,0.0215,0),
     diffuse: vec4(0.07568 ,0.61424 ,0.07568,0),
     specular: vec4(0.633 ,0.727811 ,0.633,0),
     shininess: 76.8,
 }
-//HW470: A pearl metalic material
 var pearl = {
 	  ambient: vec4(0.25, 0.20725, 0.20725, 0),
       diffuse: vec4(1, 0.829, 0.829, 0),
@@ -87,15 +42,12 @@ var jade = {
       specular: vec4(0.316228, 0.316228, 0.316228, 1.0),
       shininess: 11.1,
 }
-
-//
 var chrome = {
 	  ambient: vec4(0.25, 0.25, 0.25, 1.0),
       diffuse: vec4(0.4, 0.4, 0.4, 1.0),
       specular: vec4(0.774597,0.774597, 0.774597, 1.0),
       shininess: 8,
 }
-//brass
 var brass = {
 	  ambient: vec4(0.329412,0.223529,0.027451, 1.0),
       diffuse: vec4(0.780392,0.568627,0.113725, 1.0),
@@ -110,15 +62,11 @@ var turquoise = {
       shininess: 11.1,
 }
 
-
-
 var viewer = 
   {
     eye: vec3(0.0, 0.0, 3.0),
     at:  vec3(0.0, 0.0, 0.0),  
     up:  vec3(0.0, 1.0, 0.0),
-
-    // for moving around object; set vals so at origin
     radius: 3.0,
     theta: 0,
     phi: 0
@@ -132,18 +80,15 @@ var perspOptions =
     far:  10
   }
 
-// modelview and projection matrices
 var mvMatrix;
 var u_mvMatrixLoc;
 var basic_mvMatrixLoc;
 var normal_mvMatrixLoc;
 var light_mvMatrixLoc;
-
 var projMatrix;
 var u_projMatrixLoc;
 var basic_projMatrixLoc;
 var light_projMatrixLoc;
-
 
 // GPU vertex attribute globals
 var vPosBuff;
@@ -151,10 +96,8 @@ var a_vertexPositionLoc;
 var basic_vertexPositionLoc;
 var vNormalBuff;
 var a_vertexNormalLoc;
-
 var normalPosBuff;
 var normal_vertexPositionLoc;
-
 var lightPosBuff;
 var light_vertexPositionLoc;
 
@@ -162,7 +105,6 @@ var light_vertexPositionLoc;
 var indexBuf;
 
 // Light properties
-
 var light =
   {
     position: vec4(1.0, 1.0, 1.0, 1.0),
@@ -170,8 +112,6 @@ var light =
     diffuse: vec4(1.0, 1.0, 1.0, 1.0),
     specular: vec4(1.0, 1.0, 1.0, 1.0),
   };
-
-
 
 var ambientProductLoc;
 var diffuseProductLoc;
@@ -190,7 +130,6 @@ var mouse = {
 };
 
 function setObject(object) {
-  // set active object
   activeObject = object;
   dz = object.geometry.maxZ;
   
@@ -225,10 +164,7 @@ function setMat(mat) {
   sSlider.value = mat.shininess;
 }
 
-// ========= Initialize Graphics ===================================================
-
 window.onload = function init() {
-
 
   canvas = document.getElementById( "gl-canvas" );
   lrSlider = document.getElementById("lightradius");
@@ -238,15 +174,12 @@ window.onload = function init() {
   gl = WebGLUtils.setupWebGL( canvas );
   if ( !gl ) { alert( "WebGL isn't available" ); }
 
-  // Define viewport size 
   gl.viewport( 0, 0, canvas.width, canvas.height );
 
-   //background color 
   gl.clearColor( 0.13, 0.13, 0.13, 1.0 ); 
 
   gl.enable(gl.DEPTH_TEST);
 
-  //  Load shaders
   program1 = initShaders( gl, "vertex-shader1", "fragment-shader" );
   program2 = initShaders( gl, "light-vertex-shader", "fragment-shader" );
 
@@ -291,6 +224,7 @@ window.onload = function init() {
   turquoise.specularProduct = mult(turquoise.specular, light.specular);
 
   gl.useProgram(program1);
+  
   // Create vertex position buffer
   vPosBuff = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vPosBuff );
@@ -322,7 +256,6 @@ window.onload = function init() {
   gl.vertexAttribPointer( light_vertexPositionLoc, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( light_vertexPositionLoc );
 
-
   gl.useProgram(program1);
   lightPositionLoc = gl.getUniformLocation( program1, "lightPosition");
   ambientProductLoc = gl.getUniformLocation( program1, "ambientProduct");
@@ -333,20 +266,11 @@ window.onload = function init() {
 
   setObject(cylinderObject)
   setMat(emerald)
-  //setMat(ruby)
- // setMat(jade)
- // setMat(turquoise)
- // setMat(pearl)
- // setMat(chrome)
-  //setMat(obsidian)
 
-  // set initial eye position 
   viewer.eye = vec3(0.0, 0.0, 3*dz)
   console.log(`Initial eye pos: (0, 0, ${3*dz}), at: (0, 0, 0), up: <0, 1, 0>`);
   viewer.radius = 3*dz
 
-
-  //set up uniform locations for mv/p matrices
   mvMatrix = lookAt(vec3(viewer.eye), viewer.at, viewer.up);
   console.log(`Initial perspective options: \nfovy: ${perspOptions.fovy}, aspect: ${perspOptions.aspect}, near: ${perspOptions.near}, far: ${perspOptions.far}`);
   projMatrix = perspective(perspOptions.fovy, perspOptions.aspect, perspOptions.near, perspOptions.far);
@@ -355,13 +279,10 @@ window.onload = function init() {
   u_projMatrixLoc = gl.getUniformLocation( program1, "u_projMatrix" );
   u_mvMatrixLoc = gl.getUniformLocation( program1, "u_mvMatrix" );
 
-  // bind mv/p matrix for program2
   gl.useProgram(program2)
 
   light_projMatrixLoc = gl.getUniformLocation(program2, "u_projMatrix");
   light_mvMatrixLoc = gl.getUniformLocation( program2, "u_mvMatrix" );
-
-  // ========================== Interaction ===============================
 
 
   document.getElementById('cylinder').onclick = e => {
@@ -409,7 +330,6 @@ window.onload = function init() {
       light.position = vec4(1.0, 1.0, 1.0, 1.0);
       lightangle = 0;
     } else {
-      //HW470: Cannot turn on rotate light when eye follow light is on
       if (!fixedlight) {
         rotatelight = true;
         lr.value = 2*10*dz;
@@ -422,13 +342,6 @@ window.onload = function init() {
     projMatrix = perspective(perspOptions.fovy, perspOptions.aspect, perspOptions.near, perspOptions.far);
   }
 
-
-	// ========================== Camera control via mouse ============================================
-	// There are 4 event listeners: onmouse down, up, leave, move
-	//
-	// on onmousedown event
-	// check if left/right button not already down
-	// if just pressed, flag event with mouse.leftdown/rightdown and stores current mouse location
   document.getElementById("gl-canvas").onmousedown = function (event)
   {
     if(event.button == 0 && !mouse.leftDown)
@@ -444,9 +357,6 @@ window.onload = function init() {
       mouse.prevY = event.clientY;
     }
   };
-  
-	// onmouseup event
-	// set flag for left or right mouse button to indicate that mouse is now up
 
   document.getElementById("gl-canvas").onmouseup = function (event)
   {
@@ -461,32 +371,15 @@ window.onload = function init() {
     }
 
   };
-  
-	// onmouseleave event
-	// if mouse leaves canvas, then set flags to indicate that mouse button no longer down.
-	// This might not actually be the case, but it keeps input from the mouse when outside of app
-	// from being recorded/used.
-	// (When re-entering canvas, must re-click mouse button.)
+
   document.getElementById("gl-canvas").onmouseleave = function ()
   {
-    // Mouse is now up
     mouse.leftDown = false;
     mouse.rightDown = false;
   };
-  
-	// onmousemove event
-	// Move the camera based on mouse movement.
-	// Record the change in the mouse location
-	// If left mouse down, move the eye around the object based on this change
-	// If right mouse down, move the eye closer/farther to zoom
-	// If changes to eye made, then update modelview matrix
-
 
   document.getElementById("gl-canvas").onmousemove = function (event)
   {
-    // Get changes in x and y at this point in time
-	// only record changes if mouse button down
-	
     var currentX = event.clientX;
     var currentY = event.clientY;
 
@@ -496,11 +389,6 @@ window.onload = function init() {
 
     var makeChange = 0;
 
-    //console.log("enter onmousemove");
-    //console.log("viewer.eye = ",viewer.eye,"  viewer.at=",viewer.at,"  viewer.up=",viewer.up);
-
-    // Only perform actions if the mouse is down
-    // Compute camera rotation on left click and drag
     if (mouse.leftDown)
     {
        makeChange = 1;
@@ -516,8 +404,6 @@ window.onload = function init() {
         viewer.theta += 0.01 * deltaX;
         viewer.phi -= 0.01 * deltaY;
       }
-
-      //console.log("increment theta=",viewer.theta,"  phi=",viewer.phi);
 
       // Wrap the angles
       var twoPi = 6.28318530718;
@@ -550,8 +436,6 @@ window.onload = function init() {
 
     if(makeChange == 1) {
 
-      //console.log("onmousemove make changes to viewer");
-
       // Recompute eye and up for camera
       var threePiOver2 = 4.71238898;
       var piOver2 = 1.57079632679;
@@ -559,24 +443,10 @@ window.onload = function init() {
 
       var r = viewer.radius * Math.sin(viewer.phi + piOver2);
 
-
       viewer.eye = vec3(r * Math.cos(viewer.theta + piOver2), viewer.radius * Math.cos(viewer.phi + piOver2), r * Math.sin(viewer.theta + piOver2));
 
-      //add vector (at - origin) to move 
       for(k=0; k<3; k++)
         viewer.eye[k] = viewer.eye[k] + viewer.at[k];
-
-      //console.log("theta=",viewer.theta,"  phi=",viewer.phi);
-      //console.log("eye = ",viewer.eye[0],viewer.eye[1],viewer.eye[2]);
-      //console.log("at = ",viewer.at[0],viewer.at[1],viewer.at[2]);
-      //console.log(" ");
-	  
-	  // modify the up vector
-	  // flip the up vector to maintain line of sight cross product up to be to the right
-      // true angle is phi + pi/2, so condition is if angle < 0 or > pi
-	  
-	  
-
 
       if (viewer.phi < piOver2 || viewer.phi > threePiOver2) {
         viewer.up = vec3(0.0, 1.0, 0.0);
@@ -584,26 +454,20 @@ window.onload = function init() {
       else {
         viewer.up = vec3(0.0, -1.0, 0.0);
       }
-      // console.log("up = ",viewer.up[0],viewer.up[1],viewer.up[2]);
-      //console.log("update viewer.eye = ",viewer.eye,"  viewer.at=",viewer.at,"  viewer.up=",viewer.up);
-	  
-      // Recompute the view
-      mvMatrix = lookAt(vec3(viewer.eye), viewer.at, viewer.up);
 
+      mvMatrix = lookAt(vec3(viewer.eye), viewer.at, viewer.up);
 
       mouse.prevX = currentX;
       mouse.prevY = currentY;
     }
 
   };
-
-
+  
   render();
 }
 
 
 var render = function() {
-
   //set the light's position based on the radius and angle
   if (rotatelight) {
     light.position = multMatVec(rotateY(lightangle), vec4(0,0,lrSlider.value/10,1));
@@ -611,7 +475,6 @@ var render = function() {
   }
 
   gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
   gl.useProgram( program1 );
 
   gl.uniformMatrix4fv(u_mvMatrixLoc, false, flatten(mvMatrix));
@@ -619,7 +482,6 @@ var render = function() {
 
   gl.uniform4fv(lightPositionLoc, flatten(light.position));
   gl.uniform1f(shininessLoc, sSlider.value);
-
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vPosBuff);
   gl.vertexAttribPointer( a_vertexPositionLoc, 4, gl.FLOAT, false, 0, 0 );
@@ -630,7 +492,6 @@ var render = function() {
   gl.drawElements( gl.TRIANGLES, activeObject.geometry.numTris * 3, gl.UNSIGNED_SHORT, 0 );
 
   //Draw light
-
   gl.useProgram(program2);
 
   gl.uniformMatrix4fv(light_mvMatrixLoc, false, flatten(mvMatrix));
