@@ -1,6 +1,3 @@
-// Raquel Fierros
-
-// surface of revolution
 var surfaceRevolution = 
   {
 	 input: 0,	
