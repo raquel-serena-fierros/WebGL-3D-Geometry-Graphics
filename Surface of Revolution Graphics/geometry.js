@@ -8,31 +8,23 @@ var surfaceRevolution =
 	  CYLINDER: { curve: cylinderCurve, derivative: cylinderDerivative }
   }
 
-
-// Tower generator function
-
 function HanoiTowerVase_Curve(t) {
 
   return Math.sin(-.5 * t*Math.PI) / 4 + Math.sin(t*5*Math.PI + Math.PI) / 5.5 + .45
 }
 
-// Tower derivative
 function HanoiTowerVase_Derivative(t) {
   return -Math.PI *.5/ 4 * (Math.cos(Math.PI * t) + 5 * Math.cos(4.5*Math.PI*t))
 }
 
-// Cylinder generator function
 function cylinderCurve(t) {
   return .95
 }
 
-// Cylinder derivative
 function cylinderDerivative(t) {
   return 0
 }
 
-
-// geometry function
 function geometry(surface,f, r) {
   let vertices = [];
   let normals = [];
@@ -93,6 +85,5 @@ function multMatVec(u, v) {
     }
     result.push(sum);
   }
-
   return result;
 }
