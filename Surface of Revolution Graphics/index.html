@@ -61,7 +61,6 @@ uniform mat4 u_mvMatrix;
 uniform mat4 u_projMatrix; 
 void main()
 {
-
     fColor = vec4(1.0);
     gl_Position = u_projMatrix * u_mvMatrix * vPosition;
 
@@ -151,7 +150,6 @@ main()
                     <span class="px-4">Shininess</span>
                     <input id="shininess" type="range" min="1" max="100" value="20"/>
                 </div>
-                
             </div>
             <canvas class="my-8" id="gl-canvas" width="560" height="560">
             Oops ... your browser doesn't support the HTML5 canvas element
