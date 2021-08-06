@@ -120,7 +120,6 @@ var lightPositionLoc;
 var shininessLoc;
 
 // mouse interaction
-
 var mouse = {
   prevX: 0,
   prevY: 0,
@@ -165,7 +164,6 @@ function setMat(mat) {
 }
 
 window.onload = function init() {
-
   canvas = document.getElementById( "gl-canvas" );
   lrSlider = document.getElementById("lightradius");
   sSlider = document.getElementById("shininess");
@@ -183,12 +181,9 @@ window.onload = function init() {
   program1 = initShaders( gl, "vertex-shader1", "fragment-shader" );
   program2 = initShaders( gl, "light-vertex-shader", "fragment-shader" );
 
-
-// create geometry for cylinder and tower 
-  
+  // create geometry for cylinder and tower 
   cylinderObject.geometry = geometry(surfaceRevolution.CYLINDER, surfaceRevolution.genatrix, surfaceRevolution.rotation);
   console.log(`Cylinder Minmax Box Dimensions: (${cylinderObject.geometry.maxZ*2}, 2, ${cylinderObject.geometry.maxZ*2})`);
-
 
   towerObject.geometry = geometry(surfaceRevolution.TOWER, surfaceRevolution.genatrix, surfaceRevolution.rotation);
   console.log(`Pot Minmax Box Dimensions: (${towerObject.geometry.maxZ*2}, 2, ${towerObject.geometry.maxZ*2})`);
@@ -262,8 +257,7 @@ window.onload = function init() {
   diffuseProductLoc = gl.getUniformLocation( program1, "diffuseProduct");
   specularProductLoc = gl.getUniformLocation( program1, "specularProduct");
   shininessLoc = gl.getUniformLocation( program1, "shininess");
-
-
+	
   setObject(cylinderObject)
   setMat(emerald)
 
@@ -435,7 +429,6 @@ window.onload = function init() {
     }
 
     if(makeChange == 1) {
-
       // Recompute eye and up for camera
       var threePiOver2 = 4.71238898;
       var piOver2 = 1.57079632679;
@@ -462,10 +455,9 @@ window.onload = function init() {
     }
 
   };
-  
+
   render();
 }
-
 
 var render = function() {
   //set the light's position based on the radius and angle
@@ -473,7 +465,7 @@ var render = function() {
     light.position = multMatVec(rotateY(lightangle), vec4(0,0,lrSlider.value/10,1));
     lightangle += 0.5;
   }
-
+	
   gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.useProgram( program1 );
 
@@ -493,7 +485,7 @@ var render = function() {
 
   //Draw light
   gl.useProgram(program2);
-
+	
   gl.uniformMatrix4fv(light_mvMatrixLoc, false, flatten(mvMatrix));
   gl.uniformMatrix4fv(light_projMatrixLoc, false, flatten(projMatrix));
 
