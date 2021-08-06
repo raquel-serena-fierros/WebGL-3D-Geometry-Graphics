@@ -278,7 +278,6 @@ window.onload = function init() {
   light_projMatrixLoc = gl.getUniformLocation(program2, "u_projMatrix");
   light_mvMatrixLoc = gl.getUniformLocation( program2, "u_mvMatrix" );
 
-
   document.getElementById('cylinder').onclick = e => {
     setObject(cylinderObject)
   }
