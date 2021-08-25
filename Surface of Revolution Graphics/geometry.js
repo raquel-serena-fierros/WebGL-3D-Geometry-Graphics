@@ -18,11 +18,11 @@ function HanoiTowerVase_Derivative(t) {
 }
 
 function cylinderCurve(t) {
-  return .95
+  return  Math.sin(-1 * t*Math.PI) / 7 + Math.sin(t*Math.PI + Math.PI) / 3 + .55
 }
 
 function cylinderDerivative(t) {
-  return 0
+  return -Math.PI / 7 * (Math.cos(Math.PI * t) + 3 * Math.cos(Math.PI*t))
 }
 
 function geometry(surface,f, r) {
